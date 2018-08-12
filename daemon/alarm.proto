@@ -1,0 +1,55 @@
+syntax = "proto3";
+package daemon;
+
+service AlarmService {
+    rpc SetAlarm (SetAlarmRequest) returns (SetAlarmResponse) {}
+    rpc GetAlarms (GetAlarmsRequest) returns (GetAlarmsResponse) {}
+    rpc RemoveAlarm (RemoveAlarmRequest) returns (RemoveAlarmResponse) {}
+}
+
+message SetAlarmRequest {
+    Alarm alarm = 1;
+}
+
+message SetAlarmResponse {
+}
+
+message GetAlarmsRequest {
+}
+
+message GetAlarmsResponse {
+    repeated Alarm alarms = 1;
+}
+
+message RemoveAlarmRequest {
+    int32 alarm_id = 1;
+}
+
+message RemoveAlarmResponse {
+}
+
+message Alarm {
+    int32 id = 1;
+    Time time = 2;
+    Recurrence recurrence = 3;
+
+    enum Recurrence {
+        NO_RECURRENCE = 0; // Default value
+        HOURLY = 1;
+        DAILY = 2;
+        WEEKLY = 3;
+    }
+}
+
+message Time {
+    int32 hours = 1;
+    int32 minutes = 2;
+    int32 seconds = 3;
+    Format format = 4;
+
+    enum Format {
+        TWENTYFOUR = 0; // Default value
+        AM = 1;
+        PM = 2;
+    }
+}
