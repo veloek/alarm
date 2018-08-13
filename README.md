@@ -2,6 +2,10 @@
 
 Simple CLI alarm clock for Linux, MacOS and Windows.
 
+## Build
+
+Run `go get` to install dependencies, then run `go build` or `go install` to create executable.
+
 ## Usage
 
 The `alarm` CLI supports setting alarms, listing active alarms and removing alarms from the list.
