@@ -15,7 +15,7 @@ import (
 func setAlarm(t string, r string) {
 	a, err := parseAlarm(t, r)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error parsing alarm %s%s: %v\n", t, r, err)
 		printUsageAndExit()
 	}
 
@@ -23,7 +23,7 @@ func setAlarm(t string, r string) {
 	_, err = c.SetAlarm(context.Background(), &daemon.SetAlarmRequest{
 		Alarm: a})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error setting alarm: %v\n", err)
 		os.Exit(2)
 	}
 }
@@ -48,7 +48,6 @@ func parseAlarm(t string, r string) (al *daemon.Alarm, err error) {
 	if m[3] != "" {
 		seconds, _ = strconv.Atoi(m[3])
 	}
-	fmt.Printf("h: %d, m: %d, s: %d\n", hours, minutes, seconds)
 	var format daemon.Time_Format
 	switch m[4] {
 	case "AM":

@@ -12,7 +12,7 @@ func listAlarms() {
 	c := newClient()
 	resp, err := c.GetAlarms(context.Background(), &daemon.GetAlarmsRequest{})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error getting alarms: %v\n", err)
 		os.Exit(2)
 	}
 

@@ -13,7 +13,7 @@ func removeAlarm(id int) {
 	_, err := c.RemoveAlarm(context.Background(), &daemon.RemoveAlarmRequest{
 		AlarmId: int32(id)})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error removing alarm: %v\n", err)
 		os.Exit(2)
 	}
 }

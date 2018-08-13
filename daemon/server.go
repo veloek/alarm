@@ -2,14 +2,17 @@ package daemon
 
 import (
 	"context"
+	"fmt"
 	"net"
+	"os"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 type server struct {
-	repo *alarmRepo
+	repo    *alarmRepo
+	updates chan<- []*Alarm
 }
 
 func (s *server) SetAlarm(ctx context.Context, req *SetAlarmRequest) (*SetAlarmResponse, error) {
@@ -17,6 +20,7 @@ func (s *server) SetAlarm(ctx context.Context, req *SetAlarmRequest) (*SetAlarmR
 	if err != nil {
 		return nil, err
 	}
+	s.notifyUpdates()
 	return &SetAlarmResponse{}, nil
 }
 
@@ -33,20 +37,36 @@ func (s *server) RemoveAlarm(ctx context.Context, req *RemoveAlarmRequest) (*Rem
 	if err != nil {
 		return nil, err
 	}
+	s.notifyUpdates()
 	return &RemoveAlarmResponse{}, nil
 }
 
-func startServer(repo *alarmRepo) error {
+func (s *server) notifyUpdates() {
+	a, err := s.repo.GetAlarms()
+	if err == nil {
+		s.updates <- a
+	}
+}
+
+// startServer sets up a gRPC server and provides given channel with an updated
+// alarms list when changes occur.
+func startServer(repo *alarmRepo, updates chan<- []*Alarm) {
 	soc, err := net.Listen("tcp", PORT)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, "Error listening on port %s: %v\n", PORT, err)
+		return
 	}
 
 	grpcServer := grpc.NewServer()
 	defer grpcServer.GracefulStop()
 
-	s := &server{repo}
+	s := &server{repo, updates}
+	s.notifyUpdates() // Initial update.
+
 	RegisterAlarmServiceServer(grpcServer, s)
 	reflection.Register(grpcServer)
-	return grpcServer.Serve(soc)
+	err = grpcServer.Serve(soc)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "gRPC error: %v\n", err)
+	}
 }
