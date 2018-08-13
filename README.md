@@ -4,11 +4,17 @@ Simple CLI alarm clock for Linux, MacOS and Windows.
 
 ## Build
 
-Run `go get` to install dependencies, then run `go build` or `go install` to create executable.
+Prerequisites:
+* If Debian/Ubuntu, run `apt install libasound2-dev`.
+* If FreeBSD, run `pkg install openal-soft`.
+
+Run `go get -u` to install dependencies, then run `go build` or `go install` to
+create or install executable.
 
 ## Usage
 
-The `alarm` CLI supports setting alarms, listing active alarms and removing alarms from the list.
+The `alarm` CLI supports setting alarms, listing active alarms and removing
+alarms from the list.
 
 ### Setting alarms
 
@@ -30,7 +36,8 @@ Listing active alarms can be done with:
 
 `$ alarm -l`
 
-This will return a list of active alarms with associated IDs which can be used to remove alarms.
+This will return a list of active alarms with associated IDs which can be used
+to remove alarms.
 
 ### Removing alarms
 
@@ -38,4 +45,5 @@ Remove an alarm by first listing and finding it's ID and then calling:
 
 `$ alarm -rm <ID>`
 
-This software was written by Vegard Løkken and is released under the GNU GPLv3 license.
+This software was written by Vegard Løkken and is released under the GNU GPLv3
+license.
