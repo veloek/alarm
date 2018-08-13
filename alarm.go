@@ -18,7 +18,7 @@ const (
 )
 
 func printUsageAndExit() {
-	fmt.Println("usage: alarm [-s <hh:mm[:ss]>[AM|PM] [-r <hourly|daily|weekly>] | -l | -rm <id>]")
+	fmt.Println("usage: alarm [-s <hh:mm[:ss]>[AM|PM] [-r <hourly|daily>] | -l | -rm <id>]")
 	os.Exit(1)
 }
 

@@ -37,7 +37,6 @@ message Alarm {
         NO_RECURRENCE = 0; // Default value
         HOURLY = 1;
         DAILY = 2;
-        WEEKLY = 3;
     }
 }
 

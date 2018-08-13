@@ -18,7 +18,7 @@ Set a daily alarm at 10:00 AM:
 
 `$ alarm -s 10:00AM -r daily`
 
-Other supported recurrences include hourly and weekly.
+Recurrence can also be hourly.
 
 ### List alarms
 

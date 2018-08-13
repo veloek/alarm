@@ -98,8 +98,6 @@ func parseRecurrence(r string) (rec daemon.Alarm_Recurrence, err error) {
 		rec = daemon.Alarm_HOURLY
 	case "daily":
 		rec = daemon.Alarm_DAILY
-	case "weekly":
-		rec = daemon.Alarm_WEEKLY
 	case "":
 		rec = daemon.Alarm_NO_RECURRENCE
 	default:
