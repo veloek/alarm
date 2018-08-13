@@ -2,6 +2,11 @@
 
 Simple CLI alarm clock for Linux, MacOS and Windows.
 
+An alarm daemon is started and runs in the background as soon as you set, list
+or remove alarms. This daemon runs a scheduler that triggers configured alarms.
+
+Alarm database is stored in a file called `.alarms` in you home directory.
+
 ## Build
 
 Prerequisites:
