@@ -72,7 +72,7 @@ func startDaemon() {
 }
 
 func newClient() daemon.AlarmServiceClient {
-	conn, err := grpc.Dial(":52543", grpc.WithInsecure())
+	conn, err := grpc.Dial(daemon.PORT, grpc.WithInsecure())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error while connecting to alarm service: %v\n", err)
 		os.Exit(2)
