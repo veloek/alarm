@@ -15,7 +15,7 @@ import (
 func setAlarm(t string, r string) {
 	a, err := parseAlarm(t, r)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error parsing alarm %s%s: %v\n", t, r, err)
+		fmt.Fprintf(os.Stderr, "Error parsing alarm %q with recurrence %q: %v\n", t, r, err)
 		printUsageAndExit()
 	}
 
@@ -101,7 +101,7 @@ func parseRecurrence(r string) (rec daemon.Alarm_Recurrence, err error) {
 	case "":
 		rec = daemon.Alarm_NO_RECURRENCE
 	default:
-		err = fmt.Errorf("invalid recurrence: %s", r)
+		err = errors.New("invalid recurrence")
 	}
 	return
 }

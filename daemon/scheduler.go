@@ -61,7 +61,7 @@ func triggerAlarm(a *Alarm) {
 	if a.Recurrence == Alarm_NO_RECURRENCE {
 		err := removeAlarm(int(a.Id))
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error removing one-time alarm: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Error cleaning up one-time alarm: %v\n", err)
 		}
 	}
 

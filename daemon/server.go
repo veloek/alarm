@@ -20,7 +20,7 @@ func (s *server) SetAlarm(ctx context.Context, req *SetAlarmRequest) (*SetAlarmR
 	if err != nil {
 		return nil, err
 	}
-	s.notifyUpdates()
+	s.notify()
 	return &SetAlarmResponse{}, nil
 }
 
@@ -37,11 +37,11 @@ func (s *server) RemoveAlarm(ctx context.Context, req *RemoveAlarmRequest) (*Rem
 	if err != nil {
 		return nil, err
 	}
-	s.notifyUpdates()
+	s.notify()
 	return &RemoveAlarmResponse{}, nil
 }
 
-func (s *server) notifyUpdates() {
+func (s *server) notify() {
 	a, err := s.repo.GetAlarms()
 	if err == nil {
 		s.updates <- a
@@ -61,7 +61,7 @@ func startServer(repo *alarmRepo, updates chan<- []*Alarm) {
 	defer grpcServer.GracefulStop()
 
 	s := &server{repo, updates}
-	s.notifyUpdates() // Initial update.
+	s.notify() // Initial update.
 
 	RegisterAlarmServiceServer(grpcServer, s)
 	reflection.Register(grpcServer)

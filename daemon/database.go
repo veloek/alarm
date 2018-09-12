@@ -104,8 +104,8 @@ func createDatabase(db *sql.DB) error {
 	return err
 }
 
-// userHomeDir grabbed from
-// https://stackoverflow.com/questions/7922270/obtain-users-home-directory.
+// userHomeDir grabbed from:
+// https://stackoverflow.com/questions/7922270/obtain-users-home-directory
 func userHomeDir() string {
 	if runtime.GOOS == "windows" {
 		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
