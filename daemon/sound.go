@@ -19,12 +19,14 @@ func playSound() error {
 	if err != nil {
 		return err
 	}
-	defer d.Close()
 
-	p, err := oto.NewPlayer(d.SampleRate(), 2, 2, 8192)
+	c, err := oto.NewContext(d.SampleRate(), 2, 2, 8192)
 	if err != nil {
 		return err
 	}
+	defer c.Close()
+
+	p := c.NewPlayer()
 	defer p.Close()
 
 	if _, err := io.Copy(p, d); err != nil {
