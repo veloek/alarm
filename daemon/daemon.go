@@ -8,7 +8,7 @@ import (
 
 const (
 	// PORT is the TCP port the gRPC server is listening on.
-	PORT = ":52543"
+	PORT = "127.0.0.1:52543"
 )
 
 // Start is a blocking function that will create a database connection,
