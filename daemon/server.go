@@ -15,6 +15,11 @@ type server struct {
 	updates chan<- []*Alarm
 }
 
+func newServer(repo *alarmRepo, updates chan<- []*Alarm) *server {
+	s := &server{repo, updates}
+	return s
+}
+
 func (s *server) SetAlarm(ctx context.Context, req *SetAlarmRequest) (*SetAlarmResponse, error) {
 	err := s.repo.SetAlarm(req.Alarm)
 	if err != nil {
@@ -48,21 +53,16 @@ func (s *server) notify() {
 	}
 }
 
-// startServer sets up a gRPC server and provides given channel with an updated
-// alarms list when changes occur.
-func startServer(repo *alarmRepo, updates chan<- []*Alarm) {
+func (s *server) start() {
 	soc, err := net.Listen("tcp", PORT)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error listening on port %s: %v\n", PORT, err)
 		return
 	}
+	s.notify() // Initial update.
 
 	grpcServer := grpc.NewServer()
 	defer grpcServer.GracefulStop()
-
-	s := &server{repo, updates}
-	s.notify() // Initial update.
-
 	RegisterAlarmServiceServer(grpcServer, s)
 	reflection.Register(grpcServer)
 	err = grpcServer.Serve(soc)

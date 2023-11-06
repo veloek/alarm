@@ -1,16 +1,18 @@
 package daemon
 
 import (
+	"context"
 	"fmt"
 	"os"
 )
 
 const (
+	// PORT is the TCP port the gRPC server is listening on.
 	PORT = ":52543"
 )
 
-// Start is a blocking function that will setup database connection, start a
-// scheduler and setup the gRPC server.
+// Start is a blocking function that will create a database connection,
+// run the scheduler in the background and start the gRPC server.
 func Start() {
 	// Create database connection.
 	repo, err := dbConnect()
@@ -19,10 +21,28 @@ func Start() {
 		return
 	}
 
-	// Start scheduler.
 	updates := make(chan []*Alarm)
-	sched := newScheduler(updates)
+	server := newServer(repo, updates)
+
+	// Run scheduler in the background.
+	sched := newScheduler(updates, onAlarm(server))
 	go sched.start()
 
-	startServer(repo, updates)
+	server.start()
+}
+
+func onAlarm(s *server) func(a *Alarm) {
+	return func(a *Alarm) {
+		if a.Recurrence == Alarm_NO_RECURRENCE {
+			_, err := s.RemoveAlarm(context.Background(), &RemoveAlarmRequest{AlarmId: a.Id})
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error cleaning up one-time alarm: %v\n", err)
+			}
+		}
+
+		if err := playSound(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error playing sound: %v\n", err)
+		}
+
+	}
 }

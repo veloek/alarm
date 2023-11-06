@@ -1,14 +1,12 @@
 package daemon
 
 import (
-	"fmt"
-	"os"
 	"sync"
 	"time"
 )
 
-func newScheduler(u <-chan []*Alarm) *scheduler {
-	s := &scheduler{updates: u}
+func newScheduler(u <-chan []*Alarm, cb func(a *Alarm)) *scheduler {
+	s := &scheduler{updates: u, handler: cb}
 	go s.listenForUpdates()
 	return s
 }
@@ -17,6 +15,7 @@ type scheduler struct {
 	alarms  []*Alarm
 	updates <-chan []*Alarm
 	mutex   sync.Mutex
+	handler func(a *Alarm)
 }
 
 func (s *scheduler) listenForUpdates() {
@@ -39,41 +38,20 @@ func (s *scheduler) tick() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	for _, a := range s.alarms {
-		h := int(a.Time.Hours)
-		m := int(a.Time.Minutes)
-		s := int(a.Time.Seconds)
+		hr := int(a.Time.Hours)
+		min := int(a.Time.Minutes)
+		sec := int(a.Time.Seconds)
 
-		if a.Time.Format == Time_AM && h == 12 {
-			h = 0
+		if a.Time.Format == Time_AM && hr == 12 {
+			hr = 0
 		}
 
-		if a.Time.Format == Time_PM && h < 12 {
-			h += 12
+		if a.Time.Format == Time_PM && hr < 12 {
+			hr += 12
 		}
 
-		if s == now.Second() && m == now.Minute() && (h == now.Hour() || a.Recurrence == Alarm_HOURLY) {
-			triggerAlarm(a)
+		if sec == now.Second() && min == now.Minute() && (hr == now.Hour() || a.Recurrence == Alarm_HOURLY) {
+			s.handler(a)
 		}
 	}
-}
-
-func triggerAlarm(a *Alarm) {
-	if a.Recurrence == Alarm_NO_RECURRENCE {
-		err := removeAlarm(int(a.Id))
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error cleaning up one-time alarm: %v\n", err)
-		}
-	}
-
-	if err := playSound(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error playing sound: %v\n", err)
-	}
-}
-
-func removeAlarm(alarmID int) error {
-	repo, err := dbConnect()
-	if err != nil {
-		return err
-	}
-	return repo.RemoveAlarm(alarmID)
 }
