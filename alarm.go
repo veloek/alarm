@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	runAsDaemon = "startdaemon"
+	runAsDaemon = "--daemon"
 )
 
 func printUsageAndExit() {
